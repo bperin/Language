@@ -1,9 +1,10 @@
 # Language
- Detetct if a given audio file is spanish speaking
+ Detetct if a given audio file is spanish speaking, transcribe
 # Steps
 1. Install packages
     ```
     npm install @azure/openai
+    npm install --save-dev jest
     ``
 2. Deploy OpenAi Resource to North Central US
 3. Open zshrc

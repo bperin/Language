@@ -1,7 +1,7 @@
 import { OpenAIClient, AzureKeyCredential } from '@azure/openai';
 import { promises as fsPromises } from 'fs';
 import path from 'path';
-import { transcribeAudio } from './script'; // Assuming you've exported the main functionality
+import { transcribeAudio } from './script.mjs'; // Assuming you've exported the main functionality
 
 describe('Script', () => {
     it('should handle missing file path', async () => {
