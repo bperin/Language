@@ -1,15 +1,22 @@
 # Language
  Detetct if a given audio file is spanish speaking
 # Steps
-1. ```vi ~/.zshrc```
-2. Add ENV variables, replace with your endpoint and API key
+1. Install packages
     ```
-    export AZURE_API_ENDPOINT=https://opencity.openai.azure.com/
-    export AZURE_API_KEY=2ab54827560342249d74b80265427557
+    npm install @azure/openai
+    ``
+2. Open zshrc
+    ```vi ~/.zshrc```
+3. Add ENV variables, replace with your endpoint and API key
     ```
-3. ```
+    export AZURE_API_ENDPOINT=https://xxx.openai.azure.com/
+    export AZURE_API_KEY=2ab54827560342249d74b80265427556
+    ```
+4.  Refresh ENV vars
+    ```
     source ~/.zshrc
     ```
-4. ```
+5.  Run
+    ```
     node --experimental-modules script.mjs samples/spanish1.wav
     ```
