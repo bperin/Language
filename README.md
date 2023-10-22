@@ -5,10 +5,12 @@
     ```
     npm install @azure/openai
     npm install --save-dev jest
-    ``
-2. Deploy OpenAi Resource to North Central US
+    ```
+2. Deploy OpenAI Resource to North Central US get endpoint and api Key
 3. Open zshrc
-    ```vi ~/.zshrc```
+    ```
+    vi ~/.zshrc
+    ```
 4. Add ENV variables, replace with your endpoint and API key
     ```
     export AZURE_API_ENDPOINT=https://opencity2.openai.azure.com/
@@ -22,4 +24,14 @@
 6.  Run
     ```
     node --experimental-modules script.mjs samples/spanish1.wav
+    node --experimental-modules script.mjs samples/spanish2.wav
+    node --experimental-modules script.mjs samples/spanish3.wav
     ```
+7. Output
+    ```{
+        "success": true,
+        "message": "",
+        "isSpanish": true,
+        "text": "Ha llegado el buzón de correo de DART ProSolutions. Le prometemos, aquí no es donde las solicitudes de servicio se desvanecen en el aire. Deje su nombre, número de teléfono, nombre comercial, dirección y solicitudes de servicio. Le prometemos que alguien se pondrá en contacto con usted tan pronto como podamos. Gracias."
+       }
+```
