@@ -5,18 +5,20 @@
     ```
     npm install @azure/openai
     ``
-2. Open zshrc
+2. Deploy OpenAi Resource to North Central US
+3. Open zshrc
     ```vi ~/.zshrc```
-3. Add ENV variables, replace with your endpoint and API key
+4. Add ENV variables, replace with your endpoint and API key
     ```
-    export AZURE_API_ENDPOINT=https://xxx.openai.azure.com/
-    export AZURE_API_KEY=2ab54827560342249d74b80265427556
+    export AZURE_API_ENDPOINT=https://opencity2.openai.azure.com/
+    export AZURE_API_KEY=ff62e59e43c94f489efde8736e6b5ec4
+    export AZURE_DEPLOYMENT_NAME=OpenCityWhisper
     ```
-4.  Refresh ENV vars
+5.  Refresh ENV vars
     ```
     source ~/.zshrc
     ```
-5.  Run
+6.  Run
     ```
     node --experimental-modules script.mjs samples/spanish1.wav
     ```
