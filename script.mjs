@@ -1,48 +1,44 @@
 import { OpenAIClient, AzureKeyCredential } from '@azure/openai';
 import { promises as fsPromises } from 'fs';
-import path from 'path';
 
-/**
- * Parse an audio file check if spanish, if so transcrible to console
- */
-(async () => {
-
-    // Check if a file path is provided as a command-line argument
-    if (process.argv.length < 3) {
-        console.log('Usage: node script.js <file_path>');
-        process.exit(1); // Exit the script with an error code
-    }
-
-    // Get the file path from the command-line arguments
-    const filePath = process.argv[2];
-
-    // Check if the file has a .wav extension
-    if (path.extname(filePath).toLowerCase() !== '.wav') {
-        console.log('Please provide a WAV file.');
-        process.exit(1); // Exit the script with an error code
-    }
-
-    //load ENV variables for azure
+async function transcribeAudio(filePath) {
+    // Load ENV variables for Azure
     const endpoint = process.env["AZURE_API_ENDPOINT"];
     const azureApiKey = process.env["AZURE_API_KEY"];
     const deploymentName = process.env["AZURE_DEPLOYMENT_NAME"];
 
-    console.log(endpoint);
-    console.log(azureApiKey);
-    console.log(deploymentName);
-
-
-    const client = new OpenAIClient(endpoint, new AzureKeyCredential(azureApiKey)); //create OpenAI Client
+    const client = new OpenAIClient(endpoint, new AzureKeyCredential(azureApiKey)); // Create OpenAI Client
 
     const audio = await fsPromises.readFile(filePath);
 
-    const result = await client.getAudioTranscription(deploymentName, audio)
-        .then(result => {
-            console.log(`Transcription: ${result.text}`);
+    try {
+        const result = await client.getAudioTranscription(deploymentName, audio);
+        if (result.language === "spanish") {
+            return `Spanish Transcription: ${result.text}`;
+        } else {
+            return `${result.language} Transcription: ${result.text}`;
+        }
+    } catch (error) {
+        return `An error occurred: ${error}`;
+    }
+}
 
-        })
-        .catch(error => {
-            console.error("An error occurred:", error);
-        });
+if (process.argv.length !== 3) {
+    console.log('Usage: node script.js <file_path>');
+    process.exit(1); // Exit the script with an error code
+}
 
-})();
+const filePath = process.argv[2];
+
+if (path.extname(filePath).toLowerCase() !== '.wav') {
+    console.log('Please provide a WAV file.');
+    process.exit(1); // Exit the script with an error code
+}
+
+transcribeAudio(filePath)
+    .then(result => {
+        console.log(result);
+    })
+    .catch(error => {
+        console.error("An error occurred:", error);
+    });
