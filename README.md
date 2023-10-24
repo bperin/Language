@@ -23,11 +23,13 @@
     ```
     source ~/.zshrc
     ```
-6.  Run
+6.  Comand line usage
     ```
-    node --experimental-modules script.mjs samples/spanish1.wav
-    node --experimental-modules script.mjs samples/spanish2.wav
-    node --experimental-modules script.mjs samples/spanish3.wav
+    node script.mjs samples/spanish1.wav
+    node script.mjs samples/spanish2.wav
+    node script.mjs samples/spanish3.wav
+    node script.mjs samples/english1.wav
+    node script.mjs samples/english2.wav
     ```
 7. Output
     ```
