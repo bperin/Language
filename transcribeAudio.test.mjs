@@ -1,16 +1,16 @@
 import { expect } from 'chai';
-import { transcribeAudio } from './transcribe.mjs';
+import { throttledTranscription } from './transcribe.mjs';
 
 describe('transcribeAudio', function () {
 
-    this.timeout(180000); //set a long timeout because of quota rate throttling
+    this.timeout(60000 * 5); //set a long timeout because of quota rate throttling amount of test cases + 1
 
     it('should transcribe Spanish 1 audio file and set isSpanish to true', async function () {
 
         //spanish success
         const filePath = 'samples/spanish1.wav';
 
-        const result = await transcribeAudio(filePath);
+        const result = await throttledTranscription.transcribeAudio(filePath);
 
         expect(result.success).to.be.true;
         expect(result.isSpanish).to.be.true;
@@ -22,7 +22,7 @@ describe('transcribeAudio', function () {
         //english success
         const filePath = 'samples/english1.wav';
 
-        const result = await transcribeAudio(filePath);
+        const result = await throttledTranscription.transcribeAudio(filePath);
 
         expect(result.success).to.be.true;
         expect(result.isSpanish).to.be.false;
@@ -34,7 +34,7 @@ describe('transcribeAudio', function () {
         //spanish success
         const filePath = 'samples/spanish2.wav';
 
-        const result = await transcribeAudio(filePath);
+        const result = await throttledTranscription.transcribeAudio(filePath);
 
         expect(result.success).to.be.true;
         expect(result.isSpanish).to.be.true;
@@ -46,7 +46,7 @@ describe('transcribeAudio', function () {
         //spanish success
         const filePath = 'samples/spanish3.wav';
 
-        const result = await transcribeAudio(filePath);
+        const result = await throttledTranscription.transcribeAudio(filePath);
 
         expect(result.success).to.be.true;
         expect(result.isSpanish).to.be.true;
@@ -58,7 +58,7 @@ describe('transcribeAudio', function () {
         //english success
         const filePath = 'samples/english2.wav';
 
-        const result = await transcribeAudio(filePath);
+        const result = await throttledTranscription.transcribeAudio(filePath);
 
         expect(result.success).to.be.true;
         expect(result.isSpanish).to.be.false;

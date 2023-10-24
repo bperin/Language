@@ -1,5 +1,7 @@
 # Language
- Detetct if a given audio file is spanish speaking, transcribe
+ Detetct if a given audio file is spanish speaking, transcribe the file,
+ Azure throttles requests to 3 per minute
+
 # Steps
 1. Install packages
     ```
@@ -29,12 +31,15 @@
     ```
 7. Output
     ```
-        {
-            "success": true,
-            "message": "",
-            "isSpanish": true,
-            "text": "Ha llegado el buzón de correo de DART ProSolutions. Le prometemos, aquí no es donde las solicitudes de servicio se desvanecen en el aire. Deje su nombre, número de teléfono, nombre comercial, dirección y solicitudes de servicio. Le prometemos que alguien se pondrá en contacto con usted tan pronto como podamos. Gracias."
-        }
+    {
+        "success": true,
+        "message": "",
+        "isSpanish": true,
+        "text": "Ha llegado el buzón de correo de DART ProSolutions. Le prometemos, aquí no es donde las solicitudes de servicio se desvanecen en el aire. Deje su nombre, número de teléfono, nombre comercial, dirección y solicitudes de servicio. Le prometemos que alguien se pondrá en contacto con usted tan pronto como podamos. Gracias."
+    }
     ```
 
-8. Tests
+8. Run tests
+    ```
+    npx mocha transcribeAudio.test.mjs
+    ```
