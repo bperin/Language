@@ -1,3 +1,8 @@
 {
-    "type": "module"
+    "type": "module",
+    "dependencies": {
+        "@azure/openai": "^1.0.0-beta.6",
+        "chai": "^4.3.10",
+        "mocha": "^10.2.0"
+    }
 }
