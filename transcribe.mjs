@@ -1,4 +1,3 @@
-// Import necessary modules
 import { OpenAIClient, AzureKeyCredential } from '@azure/openai';
 import { promises as fsPromises } from 'fs';
 
