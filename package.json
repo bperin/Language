@@ -1,7 +1,7 @@
 {
     "type": "module",
     "dependencies": {
-        "@azure/openai": "^1.0.0-beta.6",
+        "@azure/ai-language-text": "^1.1.0",
         "chai": "^4.3.10",
         "microsoft-cognitiveservices-speech-sdk": "^1.32.0",
         "mocha": "^10.2.0"

@@ -1,6 +1,4 @@
-import { OpenAIClient, AzureKeyCredential } from '@azure/openai';
 import { promises as fsPromises } from 'fs';
-import { fs } from 'fs';
 import * as sdk from "microsoft-cognitiveservices-speech-sdk";
 
 const throttledTranscription = {
@@ -8,7 +6,6 @@ const throttledTranscription = {
         calls: 0,
         lastCallTimestamp: 0,
         maxCallsPerMinute: 3,
-        delay: 20000, // Delay in milliseconds (20 seconds)
     },
 
     // Load ENV variables for Azure outside the function
@@ -17,9 +14,6 @@ const throttledTranscription = {
     serviceRegion: process.env.AZURE_SPEECH_API_REGION,
 
     async transcribeAudio(filePath) {
-
-        console.log(this.subscriptionKey);
-        console.log(this.serviceRegion);
 
         // Calculate the current timestamp
         const currentTimestamp = Date.now();
@@ -40,49 +34,43 @@ const throttledTranscription = {
             this.rateLimit.lastCallTimestamp = 0;
         }
 
-        let result = this.Result();
+        var result = this.Result();
 
         try {
-            // create the push stream we need for the speech sdk.
-            const pushStream = sdk.AudioInputStream.createPushStream();
 
-            // open the file and push it to the push stream.
-            fsPromises.createReadStream(filePath).on('data', function (arrayBuffer) {
-                pushStream.write(arrayBuffer.slice());
-            }).on('end', function () {
-                pushStream.close();
-            });
+            const audio = await fsPromises.readFile(filePath);
 
-            // we are done with the setup
-            console.log("Now recognizing from: " + filePath);
+            const audioConfig = sdk.AudioConfig.fromWavFileInput(audio);
+            const speechConfig = sdk.SpeechConfig.fromSubscription(this.subscriptionKey, this.serviceRegion);
 
+            const enLanguageConfig = sdk.SourceLanguageConfig.fromLanguage("en-US");
+            const esLanguageConfig = sdk.SourceLanguageConfig.fromLanguage("es-ES");
 
-            const audioConfig = sdk.AudioConfig.fromStreamInput(pushStream);
-            const speechConfig = sdk.SpeechConfig.fromSubscription(subscriptionKey, serviceRegion);
+            const languageConfig = sdk.AutoDetectSourceLanguageConfig.fromSourceLanguageConfigs([enLanguageConfig, esLanguageConfig]);
 
-            // setting the recognition language to English.
-            speechConfig.speechRecognitionLanguage = "en-US";
+            // create the speech recognizer for english and spanish
+            const recognizer = new sdk.SpeechRecognizer.FromConfig(speechConfig, languageConfig, audioConfig);
 
-            // create the speech recognizer.
-            let recognizer = new sdk.SpeechRecognizer(speechConfig, audioConfig);
-
-            // start the recognizer and wait for a result.
-            recognizer.recognizeOnceAsync(
-                function (result) {
-                    console.log(result);
-
+            // Wrap recognizeOnceAsync in a Promise
+            result = await new Promise((resolve, reject) => {
+                recognizer.recognizeOnceAsync(function (result) {
+                   
+                  
                     recognizer.close();
                     recognizer = undefined;
+
+                    resolve(result);
                 },
-                function (err) {
-                    console.log("err - " + err);
-
-                    recognizer.close();
-                    recognizer = undefined;
-                });
+                    function (err) {
+                        recognizer.close();
+                        recognizer = undefined;
+                        reject(err);
+                    });
+            });
+           
         }
         catch (error) {
-            console.log(error);
+           
         }
 
         return result;
@@ -92,8 +80,8 @@ const throttledTranscription = {
         return {
             success: false,
             message: "",
-            isSpanish: false,
             language: "",
+            confidence: "",
             transcription: ""
         };
     },

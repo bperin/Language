@@ -8,6 +8,7 @@
     npm install @azure/openai
     npm install mocha chai
     npm install microsoft-cognitiveservices-speech-sdk
+    npm install @azure/ai-language-text
     ```
 2. Deploy OpenAI Resource to North Central US get endpoint and api Key
 3. Open zshrc
