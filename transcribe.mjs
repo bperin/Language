@@ -1,5 +1,7 @@
 import { OpenAIClient, AzureKeyCredential } from '@azure/openai';
 import { promises as fsPromises } from 'fs';
+import { fs } from 'fs';
+import * as sdk from "microsoft-cognitiveservices-speech-sdk";
 
 const throttledTranscription = {
     rateLimit: {
@@ -10,11 +12,15 @@ const throttledTranscription = {
     },
 
     // Load ENV variables for Azure outside the function
-    endpoint: process.env.AZURE_API_ENDPOINT,
-    azureApiKey: process.env.AZURE_API_KEY,
-    deploymentName: process.env.AZURE_DEPLOYMENT_NAME,
+    // endpoint: process.env.AZURE_API_ENDPOINT,
+    subscriptionKey: process.env.AZURE_SPEECH_API_KEY,
+    serviceRegion: process.env.AZURE_SPEECH_API_REGION,
 
     async transcribeAudio(filePath) {
+
+        console.log(this.subscriptionKey);
+        console.log(this.serviceRegion);
+
         // Calculate the current timestamp
         const currentTimestamp = Date.now();
 
@@ -34,27 +40,51 @@ const throttledTranscription = {
             this.rateLimit.lastCallTimestamp = 0;
         }
 
-        const client = new OpenAIClient(this.endpoint, new AzureKeyCredential(this.azureApiKey)); // Create OpenAI Client
-
-        const audio = await fsPromises.readFile(filePath);
-
         let result = this.Result();
 
         try {
-            const format = 'verbose_json';
-            const transcription = await client.getAudioTranscription(this.deploymentName, audio, format); // Get transcription as verbose JSON
+            // create the push stream we need for the speech sdk.
+            const pushStream = sdk.AudioInputStream.createPushStream();
 
-            result.success = true;
-            result.transcription = transcription.text;
-            result.language = transcription.language;
-            result.isSpanish = transcription.language === "spanish";
+            // open the file and push it to the push stream.
+            fsPromises.createReadStream(filePath).on('data', function (arrayBuffer) {
+                pushStream.write(arrayBuffer.slice());
+            }).on('end', function () {
+                pushStream.close();
+            });
 
-            // Update the rate limit tracking variables
-            this.rateLimit.calls++;
-            this.rateLimit.lastCallTimestamp = currentTimestamp;
-        } catch (error) {
-            result.message = error;
+            // we are done with the setup
+            console.log("Now recognizing from: " + filePath);
+
+
+            const audioConfig = sdk.AudioConfig.fromStreamInput(pushStream);
+            const speechConfig = sdk.SpeechConfig.fromSubscription(subscriptionKey, serviceRegion);
+
+            // setting the recognition language to English.
+            speechConfig.speechRecognitionLanguage = "en-US";
+
+            // create the speech recognizer.
+            let recognizer = new sdk.SpeechRecognizer(speechConfig, audioConfig);
+
+            // start the recognizer and wait for a result.
+            recognizer.recognizeOnceAsync(
+                function (result) {
+                    console.log(result);
+
+                    recognizer.close();
+                    recognizer = undefined;
+                },
+                function (err) {
+                    console.log("err - " + err);
+
+                    recognizer.close();
+                    recognizer = undefined;
+                });
         }
+        catch (error) {
+            console.log(error);
+        }
+
         return result;
     },
 
