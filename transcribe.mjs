@@ -5,11 +5,10 @@ const throttledTranscription = {
     rateLimit: {
         calls: 0,
         lastCallTimestamp: 0,
-        maxCallsPerMinute: 3,
+        maxCallsPerMinute: 20,
     },
 
     // Load ENV variables for Azure outside the function
-    // endpoint: process.env.AZURE_API_ENDPOINT,
     subscriptionKey: process.env.AZURE_SPEECH_API_KEY,
     serviceRegion: process.env.AZURE_SPEECH_API_REGION,
 
@@ -34,7 +33,7 @@ const throttledTranscription = {
             this.rateLimit.lastCallTimestamp = 0;
         }
 
-        var result = this.Result();
+        var myResult = this.Result();
 
         try {
 
@@ -48,32 +47,40 @@ const throttledTranscription = {
 
             const languageConfig = sdk.AutoDetectSourceLanguageConfig.fromSourceLanguageConfigs([enLanguageConfig, esLanguageConfig]);
 
-            // create the speech recognizer for english and spanish
+            // create the speech recognizer for English and Spanish
             const recognizer = new sdk.SpeechRecognizer.FromConfig(speechConfig, languageConfig, audioConfig);
 
-            // Wrap recognizeOnceAsync in a Promise
-            result = await new Promise((resolve, reject) => {
-                recognizer.recognizeOnceAsync(function (result) {
-                   
-                  
-                    recognizer.close();
-                    recognizer = undefined;
+            try {
+                myResult = await new Promise((resolve, reject) => {
+                    recognizer.recognizeOnceAsync(
+                        function (result) {
+                            myResult.transcription = result.privText;
+                            myResult.success = true;
+                            myResult.language = result.privLanguage; // Include language information
+                            myResult.confidence = result.privLanguageDetectionConfidence; // Include language detection confidence
 
-                    resolve(result);
-                },
-                    function (err) {
-                        recognizer.close();
-                        recognizer = undefined;
-                        reject(err);
-                    });
-            });
-           
-        }
-        catch (error) {
-           
-        }
+                            recognizer.close();
+                            recognizer = undefined;
 
-        return result;
+                            resolve(myResult);
+                        },
+                        function (err) {
+                            recognizer.close();
+                            recognizer = undefined;
+                            myResult.message = err;
+
+                            reject(myResult);
+                        }
+                    );
+                });
+            } catch (error) {
+                myResult.message = error;
+            }
+        } catch (error) {
+            myResult.message = error;
+        }
+        console.log(myResult);
+        return myResult;
     },
 
     Result() {
