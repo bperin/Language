@@ -15,8 +15,6 @@ describe('transcribeAudio', function () {
 
         const result = await throttledTranscription.transcribeAudio(filePath);
 
-        console.log(result);
-
         expect(result.success).to.be.true;
         expect(result.transcription).to.be.a('string');
         expect(result.language).to.equal(SPANISH);
