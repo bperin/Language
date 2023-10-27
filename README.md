@@ -1,5 +1,5 @@
 # Language
- Detetct if a given audio file is spanish speaking, transcribe the file. Supports 100 concurrent connections
+ Detetct if a given audio file is spanish or english, transcribe the file. Supports 100 concurrent connections
 
 # Steps
 1. Install packages
