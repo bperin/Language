@@ -42,5 +42,5 @@
 
 8. Run tests
     ```
-    npx mocha transcribeAudio.test.mjs
+    npm test
     ```
