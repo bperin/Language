@@ -2,41 +2,24 @@ import { promises as fsPromises } from 'fs';
 import * as sdk from "microsoft-cognitiveservices-speech-sdk";
 
 const throttledTranscription = {
-    rateLimit: {
-        calls: 0,
-        lastCallTimestamp: 0,
-        maxCallsPerMinute: 20,
-    },
+    concurrentConnections: 0, // Application-level tracking of concurrent connections
 
     // Load ENV variables for Azure outside the function
     subscriptionKey: process.env.AZURE_SPEECH_API_KEY,
     serviceRegion: process.env.AZURE_SPEECH_API_REGION,
 
     async transcribeAudio(filePath) {
-
-        // Calculate the current timestamp
-        const currentTimestamp = Date.now();
-
-        // Check if we've exceeded the rate limit for this minute
-        if (
-            this.rateLimit.calls >= this.rateLimit.maxCallsPerMinute &&
-            currentTimestamp - this.rateLimit.lastCallTimestamp < 60000 // 60,000 milliseconds in a minute
-        ) {
-            // Calculate the time remaining in the current minute
-            const timeRemaining = 60000 - (currentTimestamp - this.rateLimit.lastCallTimestamp);
-
-            // Introduce a delay for the remaining time
-            await new Promise(resolve => setTimeout(resolve, timeRemaining));
-
-            // Reset the rate limit for the new minute
-            this.rateLimit.calls = 0;
-            this.rateLimit.lastCallTimestamp = 0;
+        // Wait if the number of concurrent connections exceeds 100
+        while (this.concurrentConnections > 100) {
+            await new Promise(resolve => setTimeout(resolve, 1000)); // Wait for 1 second
         }
+
+        // Increment the concurrent connections counter
+        this.concurrentConnections++;
 
         var myResult = this.Result();
 
         try {
-
             const audio = await fsPromises.readFile(filePath);
 
             const audioConfig = sdk.AudioConfig.fromWavFileInput(audio);
@@ -51,35 +34,31 @@ const throttledTranscription = {
             const recognizer = new sdk.SpeechRecognizer.FromConfig(speechConfig, languageConfig, audioConfig);
 
             try {
-                myResult = await new Promise((resolve, reject) => {
+                const result = await new Promise((resolve, reject) => {
                     recognizer.recognizeOnceAsync(
-                        function (result) {
-                            myResult.transcription = result.privText;
-                            myResult.success = true;
-                            myResult.language = result.privLanguage; // Include language information
-                            myResult.confidence = result.privLanguageDetectionConfidence; // Include language detection confidence
-
-                            recognizer.close();
-                            recognizer = undefined;
-
-                            resolve(myResult);
+                        (result) => {
+                            resolve(result);
                         },
-                        function (err) {
-                            recognizer.close();
-                            recognizer = undefined;
-                            myResult.message = err;
-
-                            reject(myResult);
+                        (error) => {
+                            reject(error);
                         }
                     );
                 });
+
+                myResult.transcription = result.privText;
+                myResult.success = true;
+                myResult.language = result.privLanguage; // Include language information
+                myResult.confidence = result.privLanguageDetectionConfidence; // Include language detection confidence
             } catch (error) {
                 myResult.message = error;
             }
         } catch (error) {
             myResult.message = error;
+        } finally {
+            // Decrement the concurrent connections counter when the processing is done
+            this.concurrentConnections--;
         }
-        console.log(myResult);
+
         return myResult;
     },
 
