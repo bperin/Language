@@ -1,11 +1,9 @@
 # Language
- Detetct if a given audio file is spanish speaking, transcribe the file,
- Azure throttles requests to 3 per minute
+ Detetct if a given audio file is spanish speaking, transcribe the file. Supports 100 concurrent connections
 
 # Steps
 1. Install packages
     ```
-    npm install @azure/openai
     npm install mocha chai
     npm install microsoft-cognitiveservices-speech-sdk
     npm install @azure/ai-language-text
@@ -17,9 +15,8 @@
     ```
 4. Add ENV variables, replace with your endpoint and API key
     ```
-    export AZURE_API_ENDPOINT=https://opencity2.openai.azure.com/
-    export AZURE_API_KEY=ff62e59e43c94f489efde8736e6b5ec4
-    export AZURE_DEPLOYMENT_NAME=OpenCityWhisper
+    export AZURE_SPEECH_API_KEY=2ce469f2fb74446aa9e71b4d3a86450a
+    export AZURE_SPEECH_API_REGION=eastus
     ```
 5.  Refresh ENV vars
     ```
@@ -38,7 +35,7 @@
     {
         "success": true,
         "message": "",
-        "isSpanish": true,
+        "language": "es-ES",
         "transcription": "Ha llegado el buzón de correo de DART ProSolutions. Le prometemos, aquí no es donde las solicitudes de servicio se desvanecen en el aire. Deje su nombre, número de teléfono, nombre comercial, dirección y solicitudes de servicio. Le prometemos que alguien se pondrá en contacto con usted tan pronto como podamos. Gracias."
     }
     ```
