@@ -54,7 +54,7 @@ describe('transcribeAudio', function () {
         expect(result.transcription).to.be.a('string');
         expect(result.language).to.equal(SPANISH);
     });
-    it('should transcribe English 2 audio fileh', async function () {
+    it('should transcribe English 2 audio file', async function () {
 
         //english success
         const filePath = 'samples/english2.wav';
