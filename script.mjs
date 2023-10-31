@@ -11,10 +11,10 @@ async function transcribeAudioWorker(filePath, subscriptionKey, serviceRegion) {
 
         worker.on('message', (message) => {
             if (message.language) {
-                console.log(`Language: ${message.language} detected in ${message.executionTime} ms`);
+                console.log(`${message.language} detected in ${message.executionTime} ms`);
             }
             if (message.transcription) {
-                console.log(`Text: ${message.transcription}`);
+                console.log(`${message.transcription}`);
             }
         });
 
