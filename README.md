@@ -32,12 +32,37 @@
     ```
 7. Output
     ```
-    {
-        "success": true,
-        "message": "",
-        "language": "es-ES",
-        "transcription": "Ha llegado el buzón de correo de DART ProSolutions. Le prometemos, aquí no es donde las solicitudes de servicio se desvanecen en el aire. Deje su nombre, número de teléfono, nombre comercial, dirección y solicitudes de servicio. Le prometemos que alguien se pondrá en contacto con usted tan pronto como podamos. Gracias."
-    }
+        es-ES detected in 0.02 ms
+        ha llegado al bu
+        zón de correo
+        de dar
+        pro
+        solutions
+        le promete
+        mos aquí
+        no es
+        donde
+        las solici
+        tudes de servicio
+        se
+        desvanecen en el a
+        ire
+        deje su
+        nombre
+        número de
+        teléfono
+        nombre
+        comercial
+        direc
+        ción y solici
+        tud de servicio
+        le promete
+        mos que
+        alguien se pondrá
+        en contacto
+        con usted
+        tan pronto como
+        podamos
     ```
 
 8. Run tests
