@@ -1,5 +1,5 @@
 import { expect } from 'chai';
-import { Worker, parentPort, workerData } from 'worker_threads';
+import { Worker} from 'worker_threads';
 
 // Define the transcribe worker script
 const transcribeWorkerScript = './transcribeWorker.mjs';
@@ -7,6 +7,8 @@ const transcribeWorkerScript = './transcribeWorker.mjs';
 describe('transcribeAudio', function () {
     const SPANISH = "es-ES";
     const ENGLISH = "en-US";
+    const subscriptionKey = process.env.AZURE_SPEECH_API_KEY;
+    const serviceRegion = process.env.AZURE_SPEECH_API_REGION;
 
     // Function to transcribe audio in a worker thread
     async function transcribeAudioWorker(filePath) {
@@ -73,7 +75,7 @@ describe('transcribeAudio', function () {
         expect(result.language).to.equal(SPANISH);
     });
     it('should transcribe English 1 audio file', async function () {
-        // Spanish success
+        // English success
         const filePath = 'samples/english1.wav';
         const result = await transcribeAudioWorker(filePath);
 
@@ -82,7 +84,7 @@ describe('transcribeAudio', function () {
         expect(result.language).to.equal(ENGLISH);
     });
     it('should transcribe English 2 audio file', async function () {
-        // Spanish success
+        // English success
         const filePath = 'samples/english2.wav';
         const result = await transcribeAudioWorker(filePath);
 
