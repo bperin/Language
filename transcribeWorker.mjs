@@ -20,14 +20,10 @@ async function transcribeAudio() {
         const languageConfig = sdk.AutoDetectSourceLanguageConfig.fromSourceLanguageConfigs([enLanguageConfig, esLanguageConfig]);
         const recognizer = new sdk.SpeechRecognizer.FromConfig(speechConfig, languageConfig, audioConfig);
 
-        var timerStarted = false;
-
+        startTime = process.hrtime(); // Start the timer
         // Attach the recognizing event handler
         recognizer.recognizing = (sender, event) => {
-            if (!timerStarted) {
-                timerStarted = true;
-                startTime = process.hrtime(); // Start the timer
-            }
+
             if (!languageDetected && event.result.privLanguage) {
                 languageDetected = true;
                 const endTime = process.hrtime(startTime); // Stop the timer
@@ -48,9 +44,7 @@ async function transcribeAudio() {
             }
         };
 
-
-
-        const result = await new Promise((resolve, reject) => {
+        await new Promise((resolve, reject) => {
             recognizer.recognizeOnceAsync(
                 (result) => {
                     resolve(result);
