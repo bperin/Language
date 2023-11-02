@@ -54,6 +54,40 @@ describe('transcribeAudio', function () {
         expect(result.transcription).to.be.a('string');
         expect(result.language).to.equal(SPANISH);
     });
+    it('should transcribe Spanish 2 audio file', async function () {
+        // Spanish success
+        const filePath = 'samples/spanish2.wav';
+        const result = await transcribeAudioWorker(filePath);
 
-    // Similar updates for other test cases
+        expect(result.success).to.be.true;
+        expect(result.transcription).to.be.a('string');
+        expect(result.language).to.equal(SPANISH);
+    });
+    it('should transcribe Spanish 3 audio file', async function () {
+        // Spanish success
+        const filePath = 'samples/spanish3.wav';
+        const result = await transcribeAudioWorker(filePath);
+
+        expect(result.success).to.be.true;
+        expect(result.transcription).to.be.a('string');
+        expect(result.language).to.equal(SPANISH);
+    });
+    it('should transcribe English 1 audio file', async function () {
+        // Spanish success
+        const filePath = 'samples/english1.wav';
+        const result = await transcribeAudioWorker(filePath);
+
+        expect(result.success).to.be.true;
+        expect(result.transcription).to.be.a('string');
+        expect(result.language).to.equal(ENGLISH);
+    });
+    it('should transcribe English 2 audio file', async function () {
+        // Spanish success
+        const filePath = 'samples/english2.wav';
+        const result = await transcribeAudioWorker(filePath);
+
+        expect(result.success).to.be.true;
+        expect(result.transcription).to.be.a('string');
+        expect(result.language).to.equal(ENGLISH);
+    });
 });
